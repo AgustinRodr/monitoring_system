@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>IT Monitor PRO</title>
+    <meta http-equiv="refresh" content="5">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+
+<body>
+
+    <!-- 🔴 ALERTAS -->
+    {% if alerts %}
+    <div class="alert-box">
+        <h3>🚨 ALERTAS</h3>
+        {% for alert in alerts %}
+        <p>{{ alert }}</p>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <h1>🖥️ IT Monitor PRO</h1>
+
+    <!-- 🖥️ TU PC -->
+    <div class="grid">
+
+        <div class="card">
+            <h3>CPU</h3>
+            <p class="big">{{ data.cpu }}%</p>
+        </div>
+
+        <div class="card">
+            <h3>RAM</h3>
+            <p class="big">{{ data.ram_percent }}%</p>
+            <p>{{ data.ram_used }}GB / {{ data.ram_total }}GB</p>
+        </div>
+
+        <div class="card">
+            <h3>Disco</h3>
+            <p class="big">{{ data.disk_percent }}%</p>
+            <p>{{ data.disk_used }}GB / {{ data.disk_total }}GB</p>
+        </div>
+
+        <div class="card">
+            <h3>Internet</h3>
+            <p class="big">
+                {% if internet %}
+                🟢 Online
+                {% else %}
+                🔴 Offline
+                {% endif %}
+            </p>
+        </div>
+
+        <div class="card">
+            <h3>Host</h3>
+            <p class="big">{{ data.hostname }}</p>
+        </div>
+
+        <div class="card">
+            <h3>Sistema</h3>
+            <p class="big">{{ data.os }}</p>
+        </div>
+
+    </div>
+
+    <!-- 🌐 OTRAS PCs -->
+    <h2>🌐 Equipos monitoreados</h2>
+
+    <div class="grid">
+        {% for host, info in external_data.items() %}
+        <div class="card">
+
+            <h3>{{ host }}</h3>
+
+            <p class="{% if info.data.cpu > 80 %}high{% else %}normal{% endif %}">
+                CPU: {{ info.data.cpu }}%
+            </p>
+
+            <p>RAM: {{ info.data.ram }}%</p>
+
+            {% if host in offline_hosts %}
+            <p style="color:red;">🔴 OFFLINE</p>
+            {% else %}
+            <p style="color:lightgreen;">🟢 ONLINE</p>
+            {% endif %}
+
+        </div>
+        {% endfor %}
+    </div>
+
+</body>
+
+</html>

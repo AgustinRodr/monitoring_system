@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request
 from monitor import get_system_info, check_internet
-from database import init_db, insert_log
+from database import init_db, insert_log, get_logs
 from datetime import datetime
 
 app = Flask(__name__)
@@ -13,7 +13,8 @@ init_db()
 @app.route("/")
 def index():
     local_data = get_system_info()
-    internet = check_internet()
+    internet, latency = check_internet()
+    logs = get_logs(20)
 
     offline_hosts = []
 
@@ -28,8 +29,10 @@ def index():
         "index.html",
         data=local_data,
         internet=internet,
+        latency=latency,
         external_data=external_data,
-        offline_hosts=offline_hosts
+        offline_hosts=offline_hosts,
+        logs=logs
     )
 
 @app.route("/api/data", methods=["POST"])

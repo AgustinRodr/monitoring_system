@@ -44,3 +44,11 @@ h1, h2 {
 .normal {
     color: white;
 }
+
+.chart-container {
+    max-width: 900px;
+    margin: 2rem auto;
+    background: #1a1a2e;
+    border-radius: 12px;
+    padding: 1.5rem;
+}

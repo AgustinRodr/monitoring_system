@@ -9,7 +9,7 @@
 
 <body>
 
-    <!-- 🔴 ALERTAS -->
+    <!-- ALERTAS -->
     {% if alerts %}
     <div class="alert-box">
         <h3>🚨 ALERTAS</h3>
@@ -21,12 +21,14 @@
 
     <h1>🖥️ IT Monitor PRO</h1>
 
-    <!-- 🖥️ TU PC -->
     <div class="grid">
 
         <div class="card">
             <h3>CPU</h3>
             <p class="big">{{ data.cpu }}%</p>
+            {% if data.cpu_temp %}
+            <p>🌡️ {{ data.cpu_temp }}°C</p>
+            {% endif %}
         </div>
 
         <div class="card">
@@ -50,6 +52,9 @@
                 🔴 Offline
                 {% endif %}
             </p>
+            {% if latency %}
+            <p>📶 {{ latency }} ms</p>
+            {% endif %}
         </div>
 
         <div class="card">
@@ -62,33 +67,100 @@
             <p class="big">{{ data.os }}</p>
         </div>
 
+        <div class="card">
+            <h3>⏱️ Uptime</h3>
+            <p class="big">{{ data.uptime }}</p>
+        </div>
+
+        <div class="card">
+            <h3>📡 Red</h3>
+            <p>⬆️ {{ data.net_sent }} KB/s</p>
+            <p>⬇️ {{ data.net_recv }} KB/s</p>
+        </div>
+
+        {% if data.battery_percent is not none %}
+        <div class="card">
+            <h3>🔋 Batería</h3>
+            <p class="big">{{ data.battery_percent }}%</p>
+            <p>{% if data.battery_charging %}⚡ Cargando{% else %}🔌 Desenchufado{% endif %}</p>
+        </div>
+        {% endif %}
+
     </div>
 
-    <!-- 🌐 OTRAS PCs -->
+    <!-- OTRAS PCs -->
     <h2>🌐 Equipos monitoreados</h2>
 
     <div class="grid">
         {% for host, info in external_data.items() %}
         <div class="card">
-
             <h3>{{ host }}</h3>
-
             <p class="{% if info.data.cpu > 80 %}high{% else %}normal{% endif %}">
                 CPU: {{ info.data.cpu }}%
             </p>
-
             <p>RAM: {{ info.data.ram }}%</p>
-
             {% if host in offline_hosts %}
             <p style="color:red;">🔴 OFFLINE</p>
             {% else %}
             <p style="color:lightgreen;">🟢 ONLINE</p>
             {% endif %}
-
         </div>
         {% endfor %}
     </div>
 
-</body>
+    <!-- HISTORIAL GRAFICO -->
+    <h2>📊 Historial de rendimiento</h2>
+    <div class="chart-container">
+        <canvas id="historialChart"></canvas>
+    </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const labels = {{ logs | map(attribute=3) | list | tojson }};
+        const cpuData = {{ logs | map(attribute=0) | list | tojson }};
+        const ramData = {{ logs | map(attribute=1) | list | tojson }};
+
+        const ctx = document.getElementById('historialChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                        label: 'CPU %',
+                        data: cpuData,
+                        borderColor: '#00bfff',
+                        backgroundColor: 'rgba(0, 191, 255, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    },
+                    {
+                        label: 'RAM %',
+                        data: ramData,
+                        borderColor: '#bf00ff',
+                        backgroundColor: 'rgba(191, 0, 255, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { labels: { color: 'white' } }
+                },
+                scales: {
+                    x: { ticks: { color: 'white' }, grid: { color: '#333' } },
+                    y: {
+                        ticks: { color: 'white' },
+                        grid: { color: '#333' },
+                        min: 0,
+                        max: 100
+                    }
+                }
+            }
+        });
+    </script>
+
+</body>
 </html>

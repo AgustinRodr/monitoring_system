@@ -1,2 +1,4 @@
 flask
 psutil
+requests
+python-dotenv

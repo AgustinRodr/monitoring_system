@@ -1,0 +1,15 @@
+body {
+  font-family: Arial, sans-serif;
+  text-align: center;
+  margin-top: 150px; /* mueve el formulario más abajo */
+}
+
+form {
+  display: inline-block;
+  margin-top: 20px;
+}
+
+.error {
+  color: red;
+  margin-top: 15px;
+}

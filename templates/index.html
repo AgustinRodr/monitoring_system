@@ -4,15 +4,14 @@
 <head>
     <title>IT Monitor PRO</title>
     <meta http-equiv="refresh" content="5">
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
 
 <body>
 
-    <!-- ALERTAS -->
     {% if alerts %}
     <div class="alert-box">
-        <h3>🚨 ALERTAS</h3>
+        <h3> ALERTAS</h3>
         {% for alert in alerts %}
         <p>{{ alert }}</p>
         {% endfor %}
@@ -25,142 +24,104 @@
 
         <div class="card">
             <h3>CPU</h3>
-            <p class="big">{{ data.cpu }}%</p>
-            {% if data.cpu_temp %}
-            <p>🌡️ {{ data.cpu_temp }}°C</p>
+            <p class="big">{{ local.cpu }}%</p>
+            {% if local.cpu_temp %}
+            <p> {{ local.cpu_temp }}°C</p>
             {% endif %}
         </div>
 
         <div class="card">
             <h3>RAM</h3>
-            <p class="big">{{ data.ram_percent }}%</p>
-            <p>{{ data.ram_used }}GB / {{ data.ram_total }}GB</p>
+            <p class="big">{{ local.ram_percent }}%</p>
+            <p>{{ local.ram_used }}GB / {{ local.ram_total }}GB</p>
         </div>
 
         <div class="card">
             <h3>Disco</h3>
-            <p class="big">{{ data.disk_percent }}%</p>
-            <p>{{ data.disk_used }}GB / {{ data.disk_total }}GB</p>
+            <p class="big">{{ local.disk_percent }}%</p>
+            <p>{{ local.disk_used }}GB / {{ local.disk_total }}GB</p>
         </div>
 
         <div class="card">
             <h3>Internet</h3>
             <p class="big">
                 {% if internet %}
-                🟢 Online
+                 Online
                 {% else %}
-                🔴 Offline
+                 Offline
                 {% endif %}
             </p>
             {% if latency %}
-            <p>📶 {{ latency }} ms</p>
+            <p> {{ latency }} ms</p>
             {% endif %}
         </div>
 
         <div class="card">
             <h3>Host</h3>
-            <p class="big">{{ data.hostname }}</p>
+            <p class="big">{{ local.hostname }}</p>
         </div>
 
         <div class="card">
             <h3>Sistema</h3>
-            <p class="big">{{ data.os }}</p>
+            <p class="big">{{ local.os }}</p>
         </div>
 
         <div class="card">
-            <h3>⏱️ Uptime</h3>
-            <p class="big">{{ data.uptime }}</p>
+            <h3> Uptime</h3>
+            <p class="big">{{ local.uptime }}</p>
         </div>
 
         <div class="card">
-            <h3>📡 Red</h3>
-            <p>⬆️ {{ data.net_sent }} KB/s</p>
-            <p>⬇️ {{ data.net_recv }} KB/s</p>
+            <h3> Red</h3>
+            <p>⬆ {{ local.net_sent }} KB/s</p>
+            <p>⬇ {{ local.net_recv }} KB/s</p>
         </div>
 
-        {% if data.battery_percent is not none %}
+        {% if local.battery_percent is not none %}
         <div class="card">
-            <h3>🔋 Batería</h3>
-            <p class="big">{{ data.battery_percent }}%</p>
-            <p>{% if data.battery_charging %}⚡ Cargando{% else %}🔌 Desenchufado{% endif %}</p>
+            <h3> Batería</h3>
+            <p class="big">{{ local.battery_percent }}%</p>
+            <p>{% if local.battery_charging %}🔌 Cargando{% else %}🔋 Desenchufado{% endif %}</p>
         </div>
         {% endif %}
 
     </div>
 
-    <!-- OTRAS PCs -->
-    <h2>🌐 Equipos monitoreados</h2>
+    <h2>🖥️ Equipos monitoreados</h2>
 
     <div class="grid">
         {% for host, info in external_data.items() %}
         <div class="card">
             <h3>{{ host }}</h3>
-            <p class="{% if info.data.cpu > 80 %}high{% else %}normal{% endif %}">
-                CPU: {{ info.data.cpu }}%
+            {% if info['data'].get('cpu') is not none %}
+            <p class="{% if info['data']['cpu'] > 80 %}high{% else %}normal{% endif %}">
+                CPU: {{ info['data']['cpu'] }}%
             </p>
-            <p>RAM: {{ info.data.ram }}%</p>
-            {% if host in offline_hosts %}
-            <p style="color:red;">🔴 OFFLINE</p>
+            <p>RAM: {{ info['data']['ram_percent'] }}%</p>
             {% else %}
-            <p style="color:lightgreen;">🟢 ONLINE</p>
+            <p style="color:orange;"> Sin datos aún</p>
+            {% endif %}
+            {% if host in offline_hosts %}
+            <p style="color:red;"> OFFLINE</p>
+            {% else %}
+            <p style="color:lightgreen;"> ONLINE</p>
             {% endif %}
         </div>
         {% endfor %}
     </div>
 
-    <!-- HISTORIAL GRAFICO -->
-    <h2>📊 Historial de rendimiento</h2>
+    <h2>Historial de rendimiento</h2>
     <div class="chart-container">
         <canvas id="historialChart"></canvas>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        const labels = {{ logs | map(attribute=3) | list | tojson }};
-        const cpuData = {{ logs | map(attribute=0) | list | tojson }};
-        const ramData = {{ logs | map(attribute=1) | list | tojson }};
-
-        const ctx = document.getElementById('historialChart').getContext('2d');
-        new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: labels,
-                datasets: [
-                    {
-                        label: 'CPU %',
-                        data: cpuData,
-                        borderColor: '#00bfff',
-                        backgroundColor: 'rgba(0, 191, 255, 0.1)',
-                        tension: 0.4,
-                        fill: true
-                    },
-                    {
-                        label: 'RAM %',
-                        data: ramData,
-                        borderColor: '#bf00ff',
-                        backgroundColor: 'rgba(191, 0, 255, 0.1)',
-                        tension: 0.4,
-                        fill: true
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: { labels: { color: 'white' } }
-                },
-                scales: {
-                    x: { ticks: { color: 'white' }, grid: { color: '#333' } },
-                    y: {
-                        ticks: { color: 'white' },
-                        grid: { color: '#333' },
-                        min: 0,
-                        max: 100
-                    }
-                }
-            }
-        });
+        window.labels = {{ logs | map(attribute=3) | list | tojson }};
+        window.cpuData = {{ logs | map(attribute=0) | list | tojson }};
+        window.ramData = {{ logs | map(attribute=1) | list | tojson }};
     </script>
+    <script src="{{ url_for('static', filename='js/index.js') }}"></script>
 
 </body>
 </html>

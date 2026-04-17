@@ -1,15 +1,79 @@
 body {
   font-family: Arial, sans-serif;
-  text-align: center;
-  margin-top: 150px; /* mueve el formulario más abajo */
+  background-color: #f4f4f4;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
 }
 
-form {
-  display: inline-block;
-  margin-top: 20px;
+.login-box {
+  background-color: #ffffff;
+  padding: 30px;
+  border-radius: 18px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  width: 320px;
+  text-align: center; 
+}
+
+.login-box h2 {
+  margin-bottom: 20px;
+  font-family: 'Segoe UI', Arial, sans-serif; 
+  color: #2c3e50; 
+  font-size: 24px; 
+  font-weight: 600; 
+  letter-spacing: 0.5px; 
+}
+
+
+
+.login-box input[type="text"],
+.login-box input[type="password"] {
+  width: 90%; 
+  padding: 12px;
+  margin: 10px 0;
+  border: 1px solid #d1d5db; 
+  border-radius: 6px;
+  font-size: 15px;
+  font-family: 'Segoe UI', Arial, sans-serif;
+  background-color: #f9fafb; 
+  color: #333333;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+
+.login-box input::placeholder {
+  color: #9ca3af;
+}
+
+
+.login-box input:focus {
+  border-color: #007acc; 
+  box-shadow: 0 0 5px rgba(0, 122, 204, 0.3);
+  outline: none;
+}
+
+
+.login-box button {
+  width: 50%; 
+  padding: 10px;
+  margin-top: 15px;
+  background-color: #007acc;
+  border: none;
+  border-radius: 5px;
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.login-box button:hover {
+  background-color: #005fa3;
 }
 
 .error {
-  color: red;
+  color: #cc0000;
   margin-top: 15px;
+  font-size: 13px;
 }

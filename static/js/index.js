@@ -5,7 +5,6 @@ document.addEventListener("DOMContentLoaded", () => {
     return;
   }
 
-  // Ejemplo: pedir datos protegidos
   fetch("/api/data", {
     method: "POST",
     headers: {

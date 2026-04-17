@@ -3,6 +3,10 @@
 Dashboard web en tiempo real para monitoreo de sistemas desarrollado con Python y Flask.
 Desde cualquier navegador de la red local, muestra el estado completo de todos los equipos conectados.
 
+![Login page](static/img/login.png)
+![Dashboard principal](static/img/dashboard.png)
+
+
 ## Features
 
 - Monitoreo en tiempo real: CPU, RAM, disco, red, latencia y uptime
